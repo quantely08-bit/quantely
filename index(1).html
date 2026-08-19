@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>QUANTELY</title>
+
+<!-- MQTT -->
+<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+body{
+    background:#000;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    color:white;
+}
+
+.container{
+    width:430px;
+    background:#111;
+    padding:30px;
+    border-radius:25px;
+    text-align:center;
+    border:2px solid #00d9ff;
+
+    box-shadow:
+    0 0 20px #00d9ff,
+    0 0 40px #7b2cff;
+
+    animation:entrada 1s ease;
+}
+
+@keyframes entrada{
+
+from{
+    opacity:0;
+    transform:translateY(40px);
+}
+
+to{
+    opacity:1;
+    transform:translateY(0);
+}
+
+}
+
+.logo{
+    width:230px;
+    margin-bottom:15px;
+
+    filter:
+    drop-shadow(0 0 10px #00d9ff);
+}
+
+h1{
+    font-size:25px;
+    letter-spacing:3px;
+    margin-bottom:10px;
+}
+
+.subtitulo{
+    color:#00d9ff;
+    font-size:18px;
+    letter-spacing:2px;
+    margin-bottom:20px;
+}
+
+#contador{
+    font-size:90px;
+    font-weight:bold;
+    color:#00d9ff;
+
+    text-shadow:
+    0 0 10px #00d9ff,
+    0 0 30px #7b2cff;
+
+    margin:20px;
+}
+
+.panel{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:15px;
+    margin-bottom:20px;
+}
+
+.card{
+    background:#181818;
+    border-radius:15px;
+    padding:15px;
+    border:1px solid #7b2cff;
+    transition:.3s;
+}
+
+.card:hover{
+    transform:translateY(-5px);
+
+    box-shadow:
+    0 0 15px #00d9ff;
+}
+
+.titulo-card{
+    font-size:16px;
+}
+
+.numero{
+    font-size:35px;
+    color:#00d9ff;
+    font-weight:bold;
+    margin-top:5px;
+}
+
+button{
+    width:100%;
+    padding:15px;
+    margin:8px 0;
+    border:none;
+    border-radius:12px;
+    color:white;
+    font-size:17px;
+    cursor:pointer;
+    transition:.3s;
+}
+
+button:hover{
+    transform:scale(1.05);
+    box-shadow:0 0 20px #00d9ff;
+}
+
+.entrada{
+    background:linear-gradient(90deg,#00d9ff,#7b2cff);
+}
+
+.salida{
+    background:linear-gradient(90deg,#7b2cff,#00d9ff);
+}
+
+.reset{
+    background:#111;
+    border:1px solid #00d9ff;
+}
+
+.estado{
+    color:#00ff99;
+    margin-top:15px;
+}
+
+.fecha{
+    color:#aaa;
+    margin-top:10px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<img src="logo.png" class="logo" alt="Logo QUANTELY">
+
+<h1>CONTADOR DE PERSONAS</h1>
+
+<div class="subtitulo">
+GENERA · ANALIZA · MEJORA
+</div>
+
+
+<div id="contador">
+0
+</div>
+
+
+<div class="panel">
+
+
+<div class="card">
+
+<div class="titulo-card">
+Entradas
+</div>
+
+<div class="numero" id="entradas">
+0
+</div>
+
+</div>
+
+
+<div class="card">
+
+<div class="titulo-card">
+Salidas
+</div>
+
+<div class="numero" id="salidas">
+0
+</div>
+
+</div>
+
+
+<div class="card">
+
+<div class="titulo-card">
+Máximo
+</div>
+
+<div class="numero" id="maximo">
+0
+</div>
+
+</div>
+
+
+<div class="card">
+
+<div class="titulo-card">
+Dentro
+</div>
+
+<div class="numero" id="dentro">
+0
+</div>
+
+</div>
+
+
+</div>
+
+
+<button class="entrada" onclick="entrada()">
+👤 PERSONA ENTRÓ
+</button>
+
+
+<button class="salida" onclick="salida()">
+🚪 PERSONA SALIÓ
+</button>
+
+
+<button class="reset" onclick="reiniciar()">
+🔄 REINICIAR CONTADOR
+</button>
+
+
+<div class="estado" id="estado">
+🔄 Conectando con MQTT...
+</div>
+
+
+<div class="fecha" id="fecha">
+Cargando fecha...
+</div>
+
+
+<div class="card" style="margin-top:20px;">
+
+<h3 style="color:#00d9ff;">
+HISTORIAL
+</h3>
+
+<div id="historial">
+Sin movimientos registrados
+</div>
+
+</div>
+
+
+</div>
+
+
+<script>
+
+
+// ======================================================
+// MQTT
+// ======================================================
+
+const MQTT_URL =
+"wss://broker.hivemq.com:8884/mqtt";
+const TOPIC =
+"javier/dato";
+
+
+// ======================================================
+// VARIABLES
+// ======================================================
+
+let personas = 0;
+
+let entradas = 0;
+
+let salidas = 0;
+
+let maximo = 0;
+
+let ultimoDato = null;
+
+
+// ======================================================
+// CONECTAR MQTT
+// ======================================================
+
+const cliente = mqtt.connect(MQTT_URL, {
+
+    clientId:
+    "QUANTELY_" +
+    Math.random()
+    .toString(16)
+    .substring(2,10),
+
+    clean:true,
+
+    reconnectPeriod:3000
+
+});
+
+
+// ======================================================
+// CONECTADO
+// ======================================================
+
+cliente.on("connect", function(){
+
+    document.getElementById("estado").innerHTML =
+    "🟢 MQTT conectado";
+
+
+    console.log(
+    "MQTT conectado"
+    );
+
+
+    cliente.subscribe(
+    TOPIC,
+    function(error){
+
+        if(error){
+
+            console.log(
+            "Error:",
+            error
+            );
+
+        }
+
+        else{
+
+            console.log(
+            "Suscrito a:",
+            TOPIC
+            );
+
+        }
+
+    });
+
+});
+
+
+// ======================================================
+// DESCONECTADO
+// ======================================================
+
+cliente.on("offline", function(){
+
+    document.getElementById("estado").innerHTML =
+    "🔴 MQTT desconectado";
+
+});
+
+
+// ======================================================
+// RECONEXIÓN
+// ======================================================
+
+cliente.on("reconnect", function(){
+
+    document.getElementById("estado").innerHTML =
+    "🟡 Reconectando MQTT...";
+
+});
+
+
+// ======================================================
+// ERROR
+// ======================================================
+
+cliente.on("error", function(error){
+
+    console.log(
+    "Error MQTT:",
+    error
+    );
+
+});
+
+
+// ======================================================
+// RECIBIR MENSAJE DEL ESP32
+// ======================================================
+
+cliente.on(
+"message",
+function(topic,message){
+
+    let dato =
+    message.toString().trim();
+
+
+    console.log(
+    "MQTT recibió:",
+    dato
+    );
+
+
+    let nuevoNumero =
+    Number(dato);
+
+
+    // Comprobar que sea número
+
+    if(!Number.isFinite(nuevoNumero)){
+
+        console.log(
+        "Dato inválido:",
+        dato
+        );
+
+        return;
+
+    }
+
+
+    // ==================================================
+    // PRIMER VALOR
+    // ==================================================
+
+    if(ultimoDato === null){
+
+        ultimoDato =
+        nuevoNumero;
+
+        personas =
+        nuevoNumero;
+
+
+        if(personas > maximo){
+
+            maximo =
+            personas;
+
+        }
+
+
+        actualizar();
+
+
+        historial(
+
+        "📡 Conectado - Total actual: "
+        +
+        nuevoNumero
+        +
+        " - "
+        +
+        hora()
+
+        );
+
+
+        return;
+
+    }
+
+
+    // ==================================================
+    // AUMENTÓ
+    // ==================================================
+
+    if(nuevoNumero > ultimoDato){
+
+        let cantidad =
+        nuevoNumero - ultimoDato;
+
+
+        personas =
+        nuevoNumero;
+
+
+        entradas =
+        entradas + cantidad;
+
+
+        if(personas > maximo){
+
+            maximo =
+            personas;
+
+        }
+
+
+        actualizar();
+
+
+        historial(
+
+        "🟢 ENTRADA - "
+        +
+        hora()
+        +
+        " - Total: "
+        +
+        personas
+
+        );
+
+
+        document.getElementById(
+        "estado"
+        ).innerHTML =
+        "🟢 Entrada detectada por MQTT";
+
+    }
+
+
+    // ==================================================
+    // DISMINUYÓ
+    // ==================================================
+
+    else if(nuevoNumero < ultimoDato){
+
+        let cantidad =
+        ultimoDato - nuevoNumero;
+
+
+        personas =
+        nuevoNumero;
+
+
+        salidas =
+        salidas + cantidad;
+
+
+        actualizar();
+
+
+        historial(
+
+        "🔵 SALIDA - "
+        +
+        hora()
+        +
+        " - Total: "
+        +
+        personas
+
+        );
+
+
+        document.getElementById(
+        "estado"
+        ).innerHTML =
+        "🔵 Salida detectada por MQTT";
+
+    }
+
+
+    // ==================================================
+    // GUARDAR ÚLTIMO VALOR
+    // ==================================================
+
+    ultimoDato =
+    nuevoNumero;
+
+});
+
+
+// ======================================================
+// ACTUALIZAR
+// ======================================================
+
+function actualizar(){
+
+    document.getElementById(
+    "contador"
+    ).innerHTML =
+    personas;
+
+
+    document.getElementById(
+    "dentro"
+    ).innerHTML =
+    personas;
+
+
+    document.getElementById(
+    "entradas"
+    ).innerHTML =
+    entradas;
+
+
+    document.getElementById(
+    "salidas"
+    ).innerHTML =
+    salidas;
+
+
+    document.getElementById(
+    "maximo"
+    ).innerHTML =
+    maximo;
+
+}
+
+
+// ======================================================
+// FECHA Y HORA
+// ======================================================
+
+function hora(){
+
+    let fecha =
+    new Date();
+
+    return fecha.toLocaleString(
+    "es-CO"
+    );
+
+}
+
+
+// ======================================================
+// HISTORIAL
+// ======================================================
+
+function historial(texto){
+
+    let caja =
+    document.getElementById(
+    "historial"
+    );
+
+
+    if(
+    caja.innerHTML ===
+    "Sin movimientos registrados"
+    ){
+
+        caja.innerHTML =
+        "";
+
+    }
+
+
+    caja.innerHTML =
+
+    "<p style='color:#00d9ff;margin:8px;'>"
+    +
+    texto
+    +
+    "</p>"
+    +
+    caja.innerHTML;
+
+}
+
+
+// ======================================================
+// ENTRADA MANUAL
+// ======================================================
+
+function entrada(){
+
+    personas++;
+
+    entradas++;
+
+
+    if(personas > maximo){
+
+        maximo =
+        personas;
+
+    }
+
+
+    actualizar();
+
+
+    document.getElementById(
+    "estado"
+    ).innerHTML =
+    "🟢 Entrada manual";
+
+
+    historial(
+
+    "👤 Entrada manual - "
+    +
+    hora()
+    +
+    " - Total: "
+    +
+    personas
+
+    );
+
+}
+
+
+// ======================================================
+// SALIDA MANUAL
+// ======================================================
+
+function salida(){
+
+    if(personas > 0){
+
+        personas--;
+
+        salidas++;
+
+    }
+
+
+    actualizar();
+
+
+    document.getElementById(
+    "estado"
+    ).innerHTML =
+    "🔵 Salida manual";
+
+
+    historial(
+
+    "🚪 Salida manual - "
+    +
+    hora()
+    +
+    " - Total: "
+    +
+    personas
+
+    );
+
+}
+
+
+// ======================================================
+// REINICIAR
+// ======================================================
+
+function reiniciar(){
+
+    personas = 0;
+
+    entradas = 0;
+
+    salidas = 0;
+
+    maximo = 0;
+
+    ultimoDato = null;
+
+
+    actualizar();
+
+
+    document.getElementById(
+    "estado"
+    ).innerHTML =
+    "🔄 Contador reiniciado";
+
+
+    historial(
+
+    "⚙ Reinicio - "
+    +
+    hora()
+
+    );
+
+}
+
+
+// ======================================================
+// RELOJ
+// ======================================================
+
+function reloj(){
+
+    document.getElementById(
+    "fecha"
+    ).innerHTML =
+    "🕒 "
+    +
+    hora();
+
+}
+
+
+setInterval(
+reloj,
+1000
+);
+
+
+reloj();
+
+
+actualizar();
+
+
+</script>
+
+</body>
+
+</html>

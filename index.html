@@ -1,15 +1,11 @@
+
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>QUANTELY</title>
-
-<!-- MQTT -->
-<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+<title>QUANTELY | Conteo Inteligente</title>
 
 <style>
 
@@ -20,817 +16,668 @@
     font-family:Arial, Helvetica, sans-serif;
 }
 
+html{
+    scroll-behavior:smooth;
+}
+
 body{
     background:#000;
-    min-height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
     color:white;
 }
 
+/* =========================
+   CONTENEDOR
+========================= */
+
 .container{
-    width:430px;
-    background:#111;
-    padding:30px;
-    border-radius:25px;
-    text-align:center;
-    border:2px solid #00d9ff;
-
-    box-shadow:
-    0 0 20px #00d9ff,
-    0 0 40px #7b2cff;
-
-    animation:entrada 1s ease;
+    width:100%;
+    max-width:1100px;
+    margin:auto;
+    padding:20px;
 }
 
-@keyframes entrada{
+/* =========================
+   MENU
+========================= */
 
-from{
-    opacity:0;
-    transform:translateY(40px);
-}
-
-to{
-    opacity:1;
-    transform:translateY(0);
-}
-
+nav{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:20px 0;
 }
 
 .logo{
-    width:230px;
-    margin-bottom:15px;
-
-    filter:
-    drop-shadow(0 0 10px #00d9ff);
-}
-
-h1{
-    font-size:25px;
-    letter-spacing:3px;
-    margin-bottom:10px;
-}
-
-.subtitulo{
     color:#00d9ff;
-    font-size:18px;
-    letter-spacing:2px;
-    margin-bottom:20px;
-}
-
-#contador{
-    font-size:90px;
+    font-size:28px;
     font-weight:bold;
-    color:#00d9ff;
-
+    letter-spacing:3px;
     text-shadow:
     0 0 10px #00d9ff,
-    0 0 30px #7b2cff;
-
-    margin:20px;
+    0 0 20px #7b2cff;
 }
 
-.panel{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:15px;
-    margin-bottom:20px;
-}
-
-.card{
-    background:#181818;
-    border-radius:15px;
-    padding:15px;
-    border:1px solid #7b2cff;
-    transition:.3s;
-}
-
-.card:hover{
-    transform:translateY(-5px);
-
-    box-shadow:
-    0 0 15px #00d9ff;
-}
-
-.titulo-card{
-    font-size:16px;
-}
-
-.numero{
-    font-size:35px;
-    color:#00d9ff;
-    font-weight:bold;
-    margin-top:5px;
-}
-
-button{
-    width:100%;
-    padding:15px;
-    margin:8px 0;
-    border:none;
-    border-radius:12px;
+.menu a{
     color:white;
-    font-size:17px;
-    cursor:pointer;
-    transition:.3s;
+    text-decoration:none;
+    margin-left:20px;
+    font-size:15px;
 }
 
-button:hover{
-    transform:scale(1.05);
+.menu a:hover{
+    color:#00d9ff;
+}
+
+/* =========================
+   HERO
+========================= */
+
+.hero{
+    min-height:650px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+}
+
+.hero img{
+    width:260px;
+    max-width:90%;
+    margin-bottom:25px;
+    filter:drop-shadow(0 0 20px #00d9ff);
+}
+
+.hero h1{
+    font-size:55px;
+    letter-spacing:6px;
+    margin-bottom:15px;
+    color:#fff;
+}
+
+.hero .slogan{
+    color:#00d9ff;
+    font-size:22px;
+    letter-spacing:4px;
+    margin-bottom:25px;
+}
+
+.hero p{
+    max-width:700px;
+    color:#ccc;
+    font-size:19px;
+    line-height:1.7;
+    margin-bottom:30px;
+}
+
+.btn{
+    background:linear-gradient(90deg,#00d9ff,#7b2cff);
+    color:white;
+    border:none;
+    padding:16px 30px;
+    border-radius:12px;
+    font-size:18px;
+    cursor:pointer;
+    text-decoration:none;
+    display:inline-block;
+    transition:.3s;
     box-shadow:0 0 20px #00d9ff;
 }
 
-.entrada{
-    background:linear-gradient(90deg,#00d9ff,#7b2cff);
+.btn:hover{
+    transform:scale(1.05);
 }
 
-.salida{
-    background:linear-gradient(90deg,#7b2cff,#00d9ff);
+/* =========================
+   TITULOS
+========================= */
+
+.titulo{
+    text-align:center;
+    margin:80px 0 40px;
 }
 
-.reset{
-    background:#111;
-    border:1px solid #00d9ff;
+.titulo h2{
+    font-size:32px;
+    color:#00d9ff;
+    letter-spacing:3px;
 }
 
-.estado{
-    color:#00ff99;
-    margin-top:15px;
-}
-
-.fecha{
+.titulo p{
     color:#aaa;
     margin-top:10px;
 }
 
-</style>
+/* =========================
+   TARJETAS
+========================= */
 
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+    gap:25px;
+}
+
+.card{
+    background:#111;
+    border:1px solid #7b2cff;
+    border-radius:18px;
+    padding:25px;
+    text-align:center;
+    transition:.3s;
+    box-shadow:0 0 10px rgba(123,44,255,.3);
+}
+
+.card:hover{
+    transform:translateY(-8px);
+    box-shadow:
+    0 0 20px #00d9ff,
+    0 0 30px #7b2cff;
+}
+
+.card h3{
+    color:#00d9ff;
+    margin-bottom:15px;
+    font-size:21px;
+}
+
+.card p{
+    color:#ccc;
+    line-height:1.6;
+}
+
+/* =========================
+   FUNCIONAMIENTO
+========================= */
+
+.proceso{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    align-items:center;
+    gap:15px;
+    margin-top:30px;
+}
+
+.paso{
+    background:#111;
+    border:1px solid #00d9ff;
+    border-radius:15px;
+    padding:18px;
+    width:150px;
+    text-align:center;
+}
+
+.paso span{
+    display:block;
+    font-size:35px;
+    margin-bottom:10px;
+}
+
+.flecha{
+    color:#7b2cff;
+    font-size:28px;
+}
+
+/* =========================
+   BENEFICIOS
+========================= */
+
+.beneficios{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:20px;
+}
+
+.beneficio{
+    background:#181818;
+    padding:20px;
+    border-left:4px solid #00d9ff;
+    border-radius:10px;
+}
+
+.beneficio h4{
+    color:#00d9ff;
+    margin-bottom:8px;
+}
+
+/* =========================
+   CTA
+========================= */
+
+.cta{
+    margin:90px 0;
+    background:#111;
+    border:2px solid #00d9ff;
+    border-radius:25px;
+    padding:50px 25px;
+    text-align:center;
+    box-shadow:
+    0 0 20px #00d9ff,
+    0 0 40px #7b2cff;
+}
+
+.cta h2{
+    font-size:32px;
+    margin-bottom:15px;
+}
+
+.cta p{
+    color:#ccc;
+    margin-bottom:25px;
+}
+
+/* =========================
+   CONTACTO
+========================= */
+
+.contacto{
+    text-align:center;
+    margin-bottom:40px;
+}
+
+.contacto h2{
+    color:#00d9ff;
+    margin-bottom:15px;
+}
+
+.correo{
+    color:white;
+    font-size:18px;
+    background:#181818;
+    padding:15px;
+    border-radius:10px;
+    display:inline-block;
+    border:1px solid #7b2cff;
+}
+
+/* =========================
+   FOOTER
+========================= */
+
+footer{
+    border-top:1px solid #222;
+    text-align:center;
+    padding:25px;
+    color:#777;
+    margin-top:30px;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media(max-width:700px){
+
+    nav{
+        flex-direction:column;
+        gap:15px;
+    }
+
+    .menu a{
+        margin:0 8px;
+    }
+
+    .hero h1{
+        font-size:38px;
+    }
+
+    .hero .slogan{
+        font-size:17px;
+    }
+
+    .hero p{
+        font-size:16px;
+    }
+
+    .flecha{
+        transform:rotate(90deg);
+    }
+
+}
+
+</style>
 </head>
 
 <body>
 
 <div class="container">
 
-<img src="logo.png" class="logo" alt="Logo QUANTELY">
+<nav>
 
-<h1>CONTADOR DE PERSONAS</h1>
-
-<div class="subtitulo">
-GENERA · ANALIZA · MEJORA
+<div class="logo">
+QUANTELY
 </div>
 
-
-<div id="contador">
-0
+<div class="menu">
+<a href="#empresa">Empresa</a>
+<a href="#producto">Producto</a>
+<a href="#tecnologia">Tecnología</a>
+<a href="#contacto">Contacto</a>
 </div>
 
+</nav>
 
-<div class="panel">
 
+<section class="hero">
+
+<img src="logo.png" alt="Logo QUANTELY">
+
+<h1>QUANTELY</h1>
+
+<div class="slogan">
+GENERA · REA · NALIZA
+</div>
+
+<p>
+Transformamos el movimiento de las personas en información útil mediante un sistema inteligente de conteo en tiempo real, diseñado para facilitar el registro y análisis de datos de forma sencilla y tecnológica.
+</p>
+
+<a href="index(1).html" class="btn">
+VER CONTADOR EN TIEMPO REAL
+</a>
+
+</section>
+
+
+<section id="empresa">
+
+<div class="titulo">
+
+<h2>¿QUIÉNES SOMOS?</h2>
+
+<p>Innovación tecnológica creada por estudiantes.</p>
+
+</div>
 
 <div class="card">
 
-<div class="titulo-card">
-Entradas
-</div>
+<h3>QUANTELY</h3>
 
-<div class="numero" id="entradas">
-0
-</div>
+<p>
+Somos un equipo de estudiantes que desarrolla soluciones tecnológicas orientadas al uso de sistemas inteligentes e Internet de las Cosas. Nuestro proyecto busca demostrar cómo la tecnología puede automatizar el conteo de personas y convertir esos movimientos en información útil para estudiantes, instituciones y negocios.
+</p>
 
 </div>
 
+</section>
+
+
+<section id="producto">
+
+<div class="titulo">
+
+<h2>NUESTRO PRODUCTO</h2>
+
+<p>Conteo inteligente de personas en tiempo real.</p>
+
+</div>
+
+<div class="grid">
 
 <div class="card">
 
-<div class="titulo-card">
-Salidas
-</div>
+<h3>Conteo automático</h3>
 
-<div class="numero" id="salidas">
-0
-</div>
+<p>
+Detecta el ingreso y salida de personas automáticamente utilizando sensores y procesamiento electrónico.
+</p>
 
 </div>
-
 
 <div class="card">
 
-<div class="titulo-card">
-Máximo
-</div>
+<h3>Tiempo real</h3>
 
-<div class="numero" id="maximo">
-0
-</div>
+<p>
+La información se actualiza instantáneamente en una plataforma web permitiendo visualizar el número de personas dentro del lugar.
+</p>
 
 </div>
-
 
 <div class="card">
 
-<div class="titulo-card">
-Dentro
-</div>
+<h3>Registro de datos</h3>
 
-<div class="numero" id="dentro">
-0
-</div>
+<p>
+Los movimientos de entrada y salida pueden almacenarse para posteriormente consultar y analizar la información en Excel.
+</p>
 
-</div>
-
-
-</div>
-
-
-<button class="entrada" onclick="entrada()">
-👤 PERSONA ENTRÓ
-</button>
-
-
-<button class="salida" onclick="salida()">
-🚪 PERSONA SALIÓ
-</button>
-
-
-<button class="reset" onclick="reiniciar()">
-🔄 REINICIAR CONTADOR
-</button>
-
-
-<div class="estado" id="estado">
-🔄 Conectando con MQTT...
-</div>
-
-
-<div class="fecha" id="fecha">
-Cargando fecha...
-</div>
-
-
-<div class="card" style="margin-top:20px;">
-
-<h3 style="color:#00d9ff;">
-HISTORIAL
-</h3>
-
-<div id="historial">
-Sin movimientos registrados
 </div>
 
 </div>
 
+</section>
+
+
+<section>
+
+<div class="titulo">
+
+<h2>¿QUÉ PROBLEMA SOLUCIONAMOS?</h2>
 
 </div>
 
+<div class="card">
 
-<script>
+<p>
+Realizar el conteo manual de personas puede ser una tarea repetitiva y poco eficiente. QUANTELY propone una solución automatizada capaz de registrar entradas y salidas en tiempo real, facilitando la visualización de la información y el análisis de los datos obtenidos.
+</p>
 
+</div>
 
-// ======================================================
-// MQTT
-// ======================================================
+</section>
 
-const MQTT_URL =
-"wss://broker.hivemq.com:8884/mqtt";
-const TOPIC =
-"javier/dato";
 
+<section>
 
-// ======================================================
-// VARIABLES
-// ======================================================
+<div class="titulo">
 
-let personas = 0;
+<h2>¿CÓMO FUNCIONA?</h2>
 
-let entradas = 0;
+<p>Un sistema IoT conectado en tiempo real.</p>
 
-let salidas = 0;
+</div>
 
-let maximo = 0;
+<div class="proceso">
 
-let ultimoDato = null;
+<div class="paso">
+<span>👤</span>
+Persona
+</div>
 
+<div class="flecha">➜</div>
 
-// ======================================================
-// CONECTAR MQTT
-// ======================================================
+<div class="paso">
+<span>📡</span>
+Sensor HC-SR04
+</div>
 
-const cliente = mqtt.connect(MQTT_URL, {
+<div class="flecha">➜</div>
 
-    clientId:
-    "QUANTELY_" +
-    Math.random()
-    .toString(16)
-    .substring(2,10),
+<div class="paso">
+<span>🧠</span>
+ESP32
+</div>
 
-    clean:true,
+<div class="flecha">➜</div>
 
-    reconnectPeriod:3000
+<div class="paso">
+<span>☁️</span>
+MQTT
+</div>
 
-});
+<div class="flecha">➜</div>
 
+<div class="paso">
+<span>💻</span>
+Página Web
+</div>
 
-// ======================================================
-// CONECTADO
-// ======================================================
+<div class="flecha">➜</div>
 
-cliente.on("connect", function(){
+<div class="paso">
+<span>📊</span>
+Excel
+</div>
 
-    document.getElementById("estado").innerHTML =
-    "🟢 MQTT conectado";
+</div>
 
+</section>
 
-    console.log(
-    "MQTT conectado"
-    );
 
+<section id="tecnologia">
 
-    cliente.subscribe(
-    TOPIC,
-    function(error){
+<div class="titulo">
 
-        if(error){
+<h2>TECNOLOGÍA UTILIZADA</h2>
 
-            console.log(
-            "Error:",
-            error
-            );
+<p>Componentes principales del prototipo.</p>
 
-        }
+</div>
 
-        else{
+<div class="grid">
 
-            console.log(
-            "Suscrito a:",
-            TOPIC
-            );
+<div class="card">
+<h3>ESP32</h3>
+<p>
+Microcontrolador encargado de procesar la información y enviar los datos mediante MQTT.
+</p>
+</div>
 
-        }
+<div class="card">
+<h3>HC-SR04</h3>
+<p>
+Sensor ultrasónico utilizado para detectar el paso de las personas durante el ingreso y salida.
+</p>
+</div>
 
-    });
+<div class="card">
+<h3>Protoboard</h3>
+<p>
+Base de conexión utilizada para construir y organizar el circuito electrónico del prototipo.
+</p>
+</div>
 
-});
+<div class="card">
+<h3>Plataforma Web</h3>
+<p>
+Interfaz visual donde se muestran las entradas, salidas, personas dentro e historial de registros.
+</p>
+</div>
 
+</div>
 
-// ======================================================
-// DESCONECTADO
-// ======================================================
+</section>
 
-cliente.on("offline", function(){
 
-    document.getElementById("estado").innerHTML =
-    "🔴 MQTT desconectado";
+<section>
 
-});
+<div class="titulo">
 
+<h2>BENEFICIOS</h2>
 
-// ======================================================
-// RECONEXIÓN
-// ======================================================
+</div>
 
-cliente.on("reconnect", function(){
+<div class="beneficios">
 
-    document.getElementById("estado").innerHTML =
-    "🟡 Reconectando MQTT...";
+<div class="beneficio">
+<h4>Conteo en tiempo real</h4>
+<p>Visualización inmediata de la cantidad de personas presentes.</p>
+</div>
 
-});
+<div class="beneficio">
+<h4>Registro de entradas y salidas</h4>
+<p>Información organizada para consultar cada movimiento realizado.</p>
+</div>
 
+<div class="beneficio">
+<h4>Almacenamiento en Excel</h4>
+<p>Los datos pueden guardarse para facilitar análisis posteriores.</p>
+</div>
 
-// ======================================================
-// ERROR
-// ======================================================
+<div class="beneficio">
+<h4>Tecnología IoT</h4>
+<p>Comunicación entre el hardware y la plataforma web mediante MQTT.</p>
+</div>
 
-cliente.on("error", function(error){
+</div>
 
-    console.log(
-    "Error MQTT:",
-    error
-    );
+</section>
 
-});
 
+<section>
 
-// ======================================================
-// RECIBIR MENSAJE DEL ESP32
-// ======================================================
+<div class="titulo">
 
-cliente.on(
-"message",
-function(topic,message){
+<h2>¿PARA QUIÉN ESTÁ DISEÑADO?</h2>
 
-    let dato =
-    message.toString().trim();
+</div>
 
+<div class="grid">
 
-    console.log(
-    "MQTT recibió:",
-    dato
-    );
+<div class="card">
 
+<h3>🎓 Estudiantes</h3>
 
-    let nuevoNumero =
-    Number(dato);
+<p>
+Ideal para proyectos académicos relacionados con automatización, electrónica, programación e Internet de las Cosas.
+</p>
 
+</div>
 
-    // Comprobar que sea número
+<div class="card">
 
-    if(!Number.isFinite(nuevoNumero)){
+<h3>🏢 Empresas y negocios</h3>
 
-        console.log(
-        "Dato inválido:",
-        dato
-        );
+<p>
+Pensado como una solución para quienes necesiten conocer el flujo de personas dentro de un espacio.
+</p>
 
-        return;
+</div>
 
-    }
+</div>
 
+</section>
 
-    // ==================================================
-    // PRIMER VALOR
-    // ==================================================
 
-    if(ultimoDato === null){
+<section class="cta">
 
-        ultimoDato =
-        nuevoNumero;
+<h2>CONOCE NUESTRO SISTEMA</h2>
 
-        personas =
-        nuevoNumero;
+<p>
+Accede a la plataforma de QUANTELY y observa el contador inteligente funcionando en tiempo real.
+</p>
 
+<a href="index(1).html" class="btn">
+INGRESAR AL CONTADOR
+</a>
 
-        if(personas > maximo){
+</section>
 
-            maximo =
-            personas;
 
-        }
+<section id="contacto" class="contacto">
 
+<h2>CONTÁCTANOS</h2>
 
-        actualizar();
+<p class="correo">
+📧 TuCorreoAqui@gmail.com
+</p>
 
+</section>
 
-        historial(
 
-        "📡 Conectado - Total actual: "
-        +
-        nuevoNumero
-        +
-        " - "
-        +
-        hora()
+<footer>
 
-        );
+QUANTELY © 2026
 
+<br><br>
 
-        return;
+GENERA · REA · NALIZA
 
-    }
+</footer>
 
-
-    // ==================================================
-    // AUMENTÓ
-    // ==================================================
-
-    if(nuevoNumero > ultimoDato){
-
-        let cantidad =
-        nuevoNumero - ultimoDato;
-
-
-        personas =
-        nuevoNumero;
-
-
-        entradas =
-        entradas + cantidad;
-
-
-        if(personas > maximo){
-
-            maximo =
-            personas;
-
-        }
-
-
-        actualizar();
-
-
-        historial(
-
-        "🟢 ENTRADA - "
-        +
-        hora()
-        +
-        " - Total: "
-        +
-        personas
-
-        );
-
-
-        document.getElementById(
-        "estado"
-        ).innerHTML =
-        "🟢 Entrada detectada por MQTT";
-
-    }
-
-
-    // ==================================================
-    // DISMINUYÓ
-    // ==================================================
-
-    else if(nuevoNumero < ultimoDato){
-
-        let cantidad =
-        ultimoDato - nuevoNumero;
-
-
-        personas =
-        nuevoNumero;
-
-
-        salidas =
-        salidas + cantidad;
-
-
-        actualizar();
-
-
-        historial(
-
-        "🔵 SALIDA - "
-        +
-        hora()
-        +
-        " - Total: "
-        +
-        personas
-
-        );
-
-
-        document.getElementById(
-        "estado"
-        ).innerHTML =
-        "🔵 Salida detectada por MQTT";
-
-    }
-
-
-    // ==================================================
-    // GUARDAR ÚLTIMO VALOR
-    // ==================================================
-
-    ultimoDato =
-    nuevoNumero;
-
-});
-
-
-// ======================================================
-// ACTUALIZAR
-// ======================================================
-
-function actualizar(){
-
-    document.getElementById(
-    "contador"
-    ).innerHTML =
-    personas;
-
-
-    document.getElementById(
-    "dentro"
-    ).innerHTML =
-    personas;
-
-
-    document.getElementById(
-    "entradas"
-    ).innerHTML =
-    entradas;
-
-
-    document.getElementById(
-    "salidas"
-    ).innerHTML =
-    salidas;
-
-
-    document.getElementById(
-    "maximo"
-    ).innerHTML =
-    maximo;
-
-}
-
-
-// ======================================================
-// FECHA Y HORA
-// ======================================================
-
-function hora(){
-
-    let fecha =
-    new Date();
-
-    return fecha.toLocaleString(
-    "es-CO"
-    );
-
-}
-
-
-// ======================================================
-// HISTORIAL
-// ======================================================
-
-function historial(texto){
-
-    let caja =
-    document.getElementById(
-    "historial"
-    );
-
-
-    if(
-    caja.innerHTML ===
-    "Sin movimientos registrados"
-    ){
-
-        caja.innerHTML =
-        "";
-
-    }
-
-
-    caja.innerHTML =
-
-    "<p style='color:#00d9ff;margin:8px;'>"
-    +
-    texto
-    +
-    "</p>"
-    +
-    caja.innerHTML;
-
-}
-
-
-// ======================================================
-// ENTRADA MANUAL
-// ======================================================
-
-function entrada(){
-
-    personas++;
-
-    entradas++;
-
-
-    if(personas > maximo){
-
-        maximo =
-        personas;
-
-    }
-
-
-    actualizar();
-
-
-    document.getElementById(
-    "estado"
-    ).innerHTML =
-    "🟢 Entrada manual";
-
-
-    historial(
-
-    "👤 Entrada manual - "
-    +
-    hora()
-    +
-    " - Total: "
-    +
-    personas
-
-    );
-
-}
-
-
-// ======================================================
-// SALIDA MANUAL
-// ======================================================
-
-function salida(){
-
-    if(personas > 0){
-
-        personas--;
-
-        salidas++;
-
-    }
-
-
-    actualizar();
-
-
-    document.getElementById(
-    "estado"
-    ).innerHTML =
-    "🔵 Salida manual";
-
-
-    historial(
-
-    "🚪 Salida manual - "
-    +
-    hora()
-    +
-    " - Total: "
-    +
-    personas
-
-    );
-
-}
-
-
-// ======================================================
-// REINICIAR
-// ======================================================
-
-function reiniciar(){
-
-    personas = 0;
-
-    entradas = 0;
-
-    salidas = 0;
-
-    maximo = 0;
-
-    ultimoDato = null;
-
-
-    actualizar();
-
-
-    document.getElementById(
-    "estado"
-    ).innerHTML =
-    "🔄 Contador reiniciado";
-
-
-    historial(
-
-    "⚙ Reinicio - "
-    +
-    hora()
-
-    );
-
-}
-
-
-// ======================================================
-// RELOJ
-// ======================================================
-
-function reloj(){
-
-    document.getElementById(
-    "fecha"
-    ).innerHTML =
-    "🕒 "
-    +
-    hora();
-
-}
-
-
-setInterval(
-reloj,
-1000
-);
-
-
-reloj();
-
-
-actualizar();
-
-
-</script>
+</div>
 
 </body>
-
 </html>
